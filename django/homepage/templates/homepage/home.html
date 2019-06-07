@@ -7,14 +7,14 @@
 
 	<head>
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-	      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	    
+	   	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	    <link rel="shortcut icon" type="image/png" href="{% static '/login_app/images/favicon.ico' %}"/>
 	    <link href='{% static "/login_app/style.css" %}' rel='stylesheet' type='text/css'>
 
 	    <!-- Compiled and minified JavaScript -->
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
 	    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.js"></script>
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	    
 	    <script>
 	    	$(document).ready(function(){
 		    $('.sidenav').sidenav();
@@ -47,17 +47,61 @@
 
 		<!-- Main Page -->
 		<div class="container">
+			<ul class="collection with-header">
+				<li class="collection-header">
+					<div class="row">
+						<div class="col s4">Item Name</div>
+						<div class="col s3">Item Price</div>
+						<div class="col s1">Store1 Quantity</div>
+						<div class="col s1">Store2 Quantity</div>
+						<div class="col s1">Store3 Quantity</div>
+						<div class="col s1">Store4 Quantity</div>
+						<div class="col s1">Add to Cart</div>
+					</div>
+				</li>
+
 			{% for item in Items %}
-			<div class="row">
-				<div class="col s6" id="item">
-					<p> {{item.item_name}} </p>
-				</div>
-				<div class="col s6" id="item">
-					<p> {{item.item_price}} </p>
-			</div>
+				<li class=collection-item>
+					<div class="row">
+						<div class="col s4">{{item.item_name}}</div>
+						<div class="col s3">{{item.item_price}}</div>
+						<div class="col s1">{{item.store1_quant}}</div>
+						<div class="col s1">{{item.store2_quant}}</div>
+						<div class="col s1">{{item.store3_quant}}</div>
+						<div class="col s1">{{item.store4_quant}}</div>
+						<div class="col s1"><a class="btn-floating waves-effect waves-light" href="#!"><i class=material-icons>shopping_cart</i></a></div>
+					</div>
+				</li>
 			{% endfor %}
-		
+			</ul>
+
+			<div class="row">
+				<div class="col s12 offset-s5">
+					<ul class="pagination">
+					        {% if Items.has_previous %}
+					            <a href="?page=1"><i class="material-icons">first_page</i></a>
+					            <a href="?page={{ Items.previous_page_number }}"><i class="material-icons">chevron_left</i></a>
+					        {% else %}
+					        	<a class="disabled"><i class="material-icons">first_page</i></a>
+					        	<a class="disabled"><i class="material-icons">chevron_left</i></a>
+					        {% endif %}
+
+					        <span class="current" style="font-size:20px">
+					            Page {{ Items.number }} of {{ Items.paginator.num_pages }}.
+					        </span>
+
+					        {% if Items.has_next %}
+					            <a href="?page={{ Items.next_page_number }}"><i class="material-icons">chevron_right</i></a>
+					            <a href="?page={{ Items.paginator.num_pages }}"><i class="material-icons">last_page</i></a>
+					        {% else %}
+					       		<a class="disabled"><i class="material-icons">chevron_right</i></a>
+					        	<a class="disabled"><i class="material-icons">last_page</i></a>
+					        {% endif %}
+					  </ul>
+				</div>
+			</div>
 		</div>
+		
 	</body>
 </html>
 
