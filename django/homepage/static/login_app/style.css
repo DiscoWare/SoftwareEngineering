@@ -17,6 +17,10 @@ nav {
 	border-width: 1px;
 }
 
+#page_n, .active{
+	background-color: green;
+}
+
 .disabled{
 	color: grey;
 }
