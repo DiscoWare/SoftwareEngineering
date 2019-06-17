@@ -9,5 +9,18 @@ nav {
 
 #item {
 	border-style: solid;
-	border-width: 2px;
+	border-width: 1px;
+}
+
+#item-detail{
+	border-style: solid;
+	border-width: 1px;
+}
+
+#page_n, .active{
+	background-color: green;
+}
+
+.disabled{
+	color: grey;
 }

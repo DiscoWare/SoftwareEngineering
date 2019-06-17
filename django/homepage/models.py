@@ -1,22 +1,84 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-# Create your models here.
-class Tutorial(models.Model):
-	tutorial_title = models.CharField(max_length=200)
-	tutorial_content = models.TextField()
-	tutorial_published = models.DateTimeField("date published")
 
+# An address, to be used by grocery stores and users for shipping alike
+class Address(models.Model):
+	class Meta:
+		ordering = ['addressee']  # Order items in ascending order
+		verbose_name_plural = "Addresses"
+
+
+	addressee = models.CharField(max_length=50)
+	street_name = models.CharField(max_length=50)
+	suite = models.IntegerField(blank=True,null=True)
+	city = models.CharField(max_length=20)
+	state_abbreviation = models.CharField(max_length=2)
+	zip_code = models.DecimalField(max_digits=5, decimal_places=0)
+	Store = models.BooleanField()
+	# Addresses have many-to-one relationships with Orders and GroceryStores
+	
 	def __str__(self):
-		return self.tutorial_title
+		return (
+			self.addressee + "\n" +
+			" " + self.street_name + ((", #" + str(self.suite)) if self.suite else "") + "\n" +
+			self.city + ", " + self.state_abbreviation + " " + str(self.zip_code)
+		)
 
+# A grocery store connected to our website
+class GroceryStore(models.Model):
+	
+	class Meta:
+		ordering = ['name']  # Order items in ascending order
+		verbose_name_plural = "Grocery Stores"
+
+	name = models.CharField(max_length=50)
+	address = models.ForeignKey(Address, on_delete=models.CASCADE)
+	# GroveryStores have a many-to-one relationship with Inventory
+	ordering = ['-name']
+	def __str__(self):
+		return self.name
+
+# Items are types of product like apples
 class Item(models.Model):
-	item_name = models.CharField(max_length=50)
-	item_price = models.DecimalField(max_digits=7,decimal_places=2)
-	store1_quant = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(999)])
-	store2_quant = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(999)])
-	store3_quant = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(999)])
-	store4_quant = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(999)])
 
+	class Meta:
+		ordering = ['name'] # Order items in ascending order
+
+	name = models.CharField(max_length=50)
+	description = models.TextField(blank=True)
+	# Items have a many-to-one relationship with Inventory
+	
+	
+	def __str__(self):
+		return self.name
+
+# Inventory instances contain the price and stock for a specific Item at a specific GroceryStore
+class Inventory(models.Model):
+	
+	class Meta:
+		ordering = ['store','item']  # Order items in ascending order
+		verbose_name_plural = "Inventory"
+
+	item = models.ForeignKey(Item, on_delete=models.CASCADE)
+	price = models.DecimalField(max_digits=9, decimal_places=2)
+	stock = models.IntegerField()
+	store = models.ForeignKey(GroceryStore, on_delete=models.CASCADE)
+	# Inventory items have many-to-many relationships with Orders
 
 	def __str__(self):
-		return self.item_name
+		return self.item.name + " " + self.store.name + " $" + str(self.price) + " " + str(self.stock)
+
+# Orders placed by the customer
+class Order(models.Model):
+	# order_number is the "id" field which Django automatically generates
+	ordered_inventory = models.ManyToManyField(Inventory)
+	date = models.DateField()
+	total_price = models.DecimalField(max_digits=9, decimal_places=2)
+	DELIVERY_METHODS = (
+		('P', 'Pickup'),
+		('D', 'Delivery') 
+	)
+	delivery_choice = models.CharField(max_length=1, choices=DELIVERY_METHODS)
+	delivery_address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True)
+
+	def __str__(self):
+		return str(self.id)
