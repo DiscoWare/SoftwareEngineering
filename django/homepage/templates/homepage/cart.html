@@ -1,0 +1,23 @@
+<form name="home" action="{% url 'homepage:homepage' %}" method="get">
+    {% csrf_token %}
+        
+    <button class="btn-floating waves-effect waves-light" type="submit" href="#!"><i class=material-icons>home</i>
+    </button>
+
+</form>
+    
+    {% for item in items %}
+        {{item.item}}
+        {{item.price}}
+        {{item.store}}
+        
+        <!-- Sends item and quantity -->
+        <form name="remove_from_cart" action="{% url 'homepage:remove_from_cart' item.id %}" method="post">
+            {% csrf_token %}
+            
+            <button class="btn-floating waves-effect waves-light" type="submit" href="#!"><i class=material-icons>remove_from_cart</i>
+            </button>
+
+        </form>
+    {% endfor %}
+            
